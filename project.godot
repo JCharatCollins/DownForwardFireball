@@ -27,11 +27,11 @@ RestHandler="*res://addons/github-integration/scripts/RestHandler.gd"
 
 [debug]
 
-settings/fps/force_fps=60
+settings/fps/force_fps=120
 
 [editor_plugins]
 
-enabled=PoolStringArray( "github-integration" )
+enabled=PoolStringArray( "codeandweb.texturepacker", "github-integration" )
 
 [input]
 

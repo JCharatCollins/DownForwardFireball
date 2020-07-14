@@ -15,6 +15,7 @@ var animFinished
 func _ready():
 	animPlayer = $AnimationPlayer
 	stateStack.append("Idle")
+	get_node("RyuSprite").set_flip_h(true)
 	pass # Replace with function body.
 
 
@@ -107,6 +108,8 @@ func getStateMapTransition(state, input):
 		return BJB4_Transitions(input)
 	elif state == "FJB4":
 		return FJB4_Transitions(input)
+	elif state == "B6":
+		return B6_Transitions(input)
 
 #--------------------------
 #  STATE MAPS: BE CAREFUL
@@ -126,7 +129,7 @@ var groundedStatesMap = {
 	[DIRECTIONS.UB, "A"]: ["Idle", "A5"],
 	[DIRECTIONS.UF, "A"]: ["Idle", "A5"],
 	[DIRECTIONS.N, "B"]: ["Idle", "B5"],
-	[DIRECTIONS.B, "B"]: ["Idle", "B4"]
+	[DIRECTIONS.B, "B"]: ["NeutralJump", "B4"]
 }
 var neutralJumpingStatesMap = {
 	[DIRECTIONS.B]: ["NeutralJump"],
@@ -192,8 +195,21 @@ func A5_Transitions(input):
 	return groundedAttackTransitions(input, "A5")
 func B5_Transitions(input):
 	return groundedAttackTransitions(input, "B5")
+func B6_Transitions(input):
+	if get_node("RyuAnimationPlayer").current_animation_position() >= 0.2:
+		if !is_on_floor():
+			return ["NeutralJump", "B6"]
+		elif is_on_floor()
 func B4_Transitions(input):
-	return groundedAttackTransitions(input, "B4")
+	if is_on_floor() == true:
+		get_node("States/NeutralJump").jumpPower = Vector2(0, -200)
+		return groundedStatesMap[input]
+	else:
+		if animFinished == "B4":
+			animFinished = ""
+			return ["NeutralJump"]
+		else:
+			return ["NeutralJump", "B4"]
 func NeutralJump_Transitions(input):
 	if is_on_floor() == true:
 		get_node("States/NeutralJump").jumpPower = Vector2(0, -200)
@@ -208,7 +224,6 @@ func BackJump_Transitions(input):
 		print(input)
 		return backJumpingStatesMap[input]
 func ForwardJump_Transitions(input):
-	print("A")
 	if is_on_floor() == true:
 		get_node("States/ForwardJump").jumpPower = Vector2(75, -200)
 		return groundedStatesMap[input]
@@ -260,8 +275,6 @@ func FJB4_Transitions(input):
 	else:
 		return ["ForwardJump", "FJB4"]
 
-func _on_AnimationPlayer_animation_finished(anim_name):
+func _on_RyuAnimationPlayer_animation_finished(anim_name):
 	print(anim_name)
 	animFinished = anim_name
-
-
